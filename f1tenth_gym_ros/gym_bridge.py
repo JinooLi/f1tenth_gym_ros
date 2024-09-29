@@ -174,17 +174,17 @@ class GymBridge(Node):
                 10)
 
 
-    def drive_callback(self, drive_msg):
+    def drive_callback(self, drive_msg: AckermannDriveStamped):
         self.ego_requested_speed = drive_msg.drive.speed
         self.ego_steer = drive_msg.drive.steering_angle
         self.ego_drive_published = True
 
-    def opp_drive_callback(self, drive_msg):
+    def opp_drive_callback(self, drive_msg: AckermannDriveStamped):
         self.opp_requested_speed = drive_msg.drive.speed
         self.opp_steer = drive_msg.drive.steering_angle
         self.opp_drive_published = True
 
-    def ego_reset_callback(self, pose_msg):
+    def ego_reset_callback(self, pose_msg: PoseWithCovarianceStamped):
         rx = pose_msg.pose.pose.position.x
         ry = pose_msg.pose.pose.position.y
         rqx = pose_msg.pose.pose.orientation.x
@@ -198,7 +198,7 @@ class GymBridge(Node):
         else:
             self.obs, _ , self.done, _ = self.env.reset(np.array([[rx, ry, rtheta]]))
 
-    def opp_reset_callback(self, pose_msg):
+    def opp_reset_callback(self, pose_msg: PoseStamped):
         if self.has_opp:
             rx = pose_msg.pose.position.x
             ry = pose_msg.pose.position.y
@@ -208,7 +208,7 @@ class GymBridge(Node):
             rqw = pose_msg.pose.orientation.w
             _, _, rtheta = euler.quat2euler([rqw, rqx, rqy, rqz], axes='sxyz')
             self.obs, _ , self.done, _ = self.env.reset(np.array([list(self.ego_pose), [rx, ry, rtheta]]))
-    def teleop_callback(self, twist_msg):
+    def teleop_callback(self, twist_msg: Twist):
         if not self.ego_drive_published:
             self.ego_drive_published = True
 
